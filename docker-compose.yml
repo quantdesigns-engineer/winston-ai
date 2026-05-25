@@ -1,0 +1,39 @@
+services:
+  router:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Bind only to the host's loopback — public access is provided by
+    # Tailscale serve pointed at this port, never by direct LAN exposure.
+    ports:
+      - "127.0.0.1:49710:49710"
+    env_file: .env
+    environment:
+      - WINSTON_AGENTS_DIR=/data/agents
+      - WINSTON_DATA_DIR=/data/config
+      - WINSTON_LOG_DIR=/data/logs
+      - FRONTEND_URL=http://frontend:49711
+      - BIND_ADDR=0.0.0.0
+    volumes:
+      - ${HOME}/.claude/agents:/data/agents
+      - winston-config:/data/config
+      - winston-logs:/data/logs
+    depends_on:
+      frontend:
+        condition: service_started
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    environment:
+      - PORT=49711
+      - HOSTNAME=0.0.0.0
+    expose:
+      - "49711"
+    restart: unless-stopped
+
+volumes:
+  winston-config:
+  winston-logs:

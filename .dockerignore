@@ -1,0 +1,13 @@
+bin/
+tmp/
+.env
+.env.local
+.env.*.local
+web/
+docs/
+.git/
+.air.toml
+*.log
+*.pem
+.DS_Store
+coverage.out

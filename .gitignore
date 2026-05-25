@@ -1,0 +1,45 @@
+# Build artifacts
+bin/
+tmp/
+*.exe
+
+# Generated image output
+test-assets/
+nanobanana-images/
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+web/.env.local
+
+# Go
+vendor/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+.vercel/
+
+# Dev tools
+.air.toml
+*.pem
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docs
+docs/*.pdf
+/winston-*.pdf
+
+# Local-only artifacts (sensitive findings or large caches)
+pentest/
+.firecrawl/
+coverage.out
+
+# Claude Code local config (may contain tokens / per-user permissions)
+.claude/
+
