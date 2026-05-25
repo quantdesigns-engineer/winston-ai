@@ -75,6 +75,7 @@ const HOUR_HEIGHT = 60; // px per hour row
 
 const WORKSPACE_COLORS: Record<string, { bg: string; border: string; text: string; dot: string }> = {
   team: { bg: "bg-violet-500/15", border: "border-violet-500/30", text: "text-violet-300", dot: "bg-violet-500" },
+  acme: { bg: "bg-emerald-500/15", border: "border-emerald-500/30", text: "text-emerald-300", dot: "bg-emerald-500" },
   personal: { bg: "bg-amber-500/15", border: "border-amber-500/30", text: "text-amber-300", dot: "bg-amber-500" },
 };
 
@@ -127,6 +128,8 @@ function cronToHuman(cron: string): string {
 // Default prompts for agents -- used when selecting an agent in the schedule form.
 // Falls back to the agent description if no explicit default is set.
 const PROMPT_DEFAULTS: Record<string, string> = {
+  "acme-social":
+    "Run the weekly Acme Insights social media content pipeline. Research competitive intelligence trends, write 3 platform-optimized posts, and generate branded images.",
   marketing: "Run a marketing briefing -- analyze recent campaigns and suggest next steps.",
   pentester: "Run a security scan summary of recent findings and recommendations.",
   winston: "Check in with a daily briefing -- calendar, priorities, and pending items.",
