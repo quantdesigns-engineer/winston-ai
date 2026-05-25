@@ -693,6 +693,12 @@ export default function Home() {
               </svg>
               Schedules
             </NavLink>
+            <NavLink href="/jobs">
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.073a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V10.604M20.25 14.15l-6.05 2.415a2.25 2.25 0 01-1.4 0L3.75 10.604M20.25 14.15L21 13.85M3.75 10.604L3 10.3m0 0l9-3.6 9 3.6-9 3.6-9-3.6z" />
+              </svg>
+              Jobs
+            </NavLink>
           </nav>
         </div>
       </header>
