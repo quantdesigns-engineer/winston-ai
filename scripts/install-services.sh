@@ -79,7 +79,7 @@ install_macos() {
     <string>com.winston.router</string>
     <key>ProgramArguments</key>
     <array>
-        <string>$PROJECT_DIR/bin/polymr</string>
+        <string>$PROJECT_DIR/bin/winston</string>
     </array>
     <key>WorkingDirectory</key>
     <string>$PROJECT_DIR</string>
@@ -112,14 +112,14 @@ PLIST
         <string>-H</string>
         <string>127.0.0.1</string>
         <string>-p</string>
-        <string>49711</string>
+        <string>57711</string>
     </array>
     <key>WorkingDirectory</key>
     <string>$PROJECT_DIR/web</string>
     <key>EnvironmentVariables</key>
     <dict>
 $ENV_BLOCK        <key>PORT</key>
-        <string>49711</string>
+        <string>57711</string>
         <key>HOSTNAME</key>
         <string>127.0.0.1</string>
     </dict>
@@ -159,7 +159,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=$PROJECT_DIR/bin/polymr
+ExecStart=$PROJECT_DIR/bin/winston
 WorkingDirectory=$PROJECT_DIR
 EnvironmentFile=$PROJECT_DIR/.env
 Restart=always

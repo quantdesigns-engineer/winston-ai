@@ -978,7 +978,7 @@ export default function Schedules() {
   const [selectedDays, setSelectedDays] = useState<number[]>([1]);
   const [selectedAgent, setSelectedAgent] = useState("");
   const [prompt, setPrompt] = useState("");
-  const [slackChannel, setSlackChannel] = useState("#polymr-personal");
+  const [slackChannel, setSlackChannel] = useState("#winston-personal");
   const [timezone, setTimezone] = useState("");
 
   useEffect(() => {
@@ -1094,27 +1094,31 @@ export default function Schedules() {
     }
   }
 
-  // Group agents for the selector
+  // Group agents for the selector. "personal" is rendered by the fixed Personal
+  // button at the top of the dropdown — also covers any agent whose name is
+  // prefixed `personal-` — so drop it from the per-workspace list to avoid a
+  // duplicate entry.
   const { workspaces, standalone } = groupAgentsByWorkspace(agents);
-  const workspaceNames = workspaces.map((w) => w.name);
+  const workspaceNames = workspaces.map((w) => w.name).filter((n) => n !== "personal");
 
   // Filter schedules by workspace
   const filteredSchedules = schedules.filter((s) => {
     if (wsFilter === null) return true;
     if (wsFilter === "personal") {
       const agent = agents.find((a) => a.name === s.agent_id);
-      return !agent?.workspace;
+      return !agent?.workspace || agent.workspace === "personal";
     }
     const agent = agents.find((a) => a.name === s.agent_id);
     return agent?.workspace === wsFilter;
   });
 
-  // Filter agents for selector based on workspace filter
+  // Filter agents for selector based on workspace filter. "personal" includes
+  // both unprefixed agents and those explicitly named `personal-*`.
   const selectableAgents =
     wsFilter === null
       ? agents
       : wsFilter === "personal"
-        ? standalone
+        ? [...standalone, ...agents.filter((a) => a.workspace === "personal")]
         : agents.filter((a) => a.workspace === wsFilter);
 
   // Calendar events for day/week views

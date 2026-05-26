@@ -38,7 +38,7 @@ Two processes run as macOS LaunchAgents (or Linux systemd units), both with auto
 
 | Service | Bind | What it does |
 |---------|------|-------------|
-| **Go Router** (`bin/polymr`) | `127.0.0.1:49710` | HTTP server — routes requests, runs agents, holds the Slack Socket Mode websocket |
+| **Go Router** (`bin/winston`) | `127.0.0.1:49710` | HTTP server — routes requests, runs agents, holds the Slack Socket Mode websocket |
 | **Next.js Frontend** (`web/`) | `127.0.0.1:49711` | Web dashboard — agent chat, voice, schedules. Only accessible via the Go router's reverse proxy |
 
 For remote access to the web UI, run `tailscale serve` to expose `127.0.0.1:49710` over your tailnet (see [DEPLOYMENT.md](DEPLOYMENT.md)).
@@ -384,7 +384,7 @@ IP is taken from `RemoteAddr`. Because the router only accepts loopback connecti
 
 ### Audit logging
 
-All authenticated requests and failed auth attempts are logged as JSON to `~/Library/Logs/polymr-audit.log`:
+All authenticated requests and failed auth attempts are logged as JSON to `~/Library/Logs/winston-audit.log`:
 
 ```json
 {"timestamp":"2026-03-28T09:30:12Z","ip":"203.0.113.42","user":"pg","method":"POST","path":"/api/agents/marketing/run","status":200,"user_agent":"Mozilla/5.0..."}
@@ -442,8 +442,6 @@ If `SLACK_NOTIFY_CHANNEL` is not set, notifications are logged locally only. A b
 **Required:**
 ```bash
 PORT=49710
-POLYMR_USER=youruser
-POLYMR_PASS=yourpassword
 SLACK_BOT_TOKEN=xoxb-...
 SLACK_APP_TOKEN=xapp-...        # App-Level Token for Socket Mode
 SLACK_SIGNING_SECRET=...        # Used by the legacy HTTP /slack/* path
@@ -478,7 +476,7 @@ AUDIT_LOG_PATH=...
 
 ```
 winston/
-├── cmd/polymr/main.go              # Entry point — starts HTTP server
+├── cmd/winston/main.go              # Entry point — starts HTTP server
 ├── internal/
 │   ├── agents/manager.go           # Agent loading, execution, sessions, schedules (~1200 LOC)
 │   ├── notify/notify.go            # Ops notifications (startup, shutdown, model/prompt changes)
@@ -523,7 +521,7 @@ launchctl list | grep winston
 # View logs
 tail -f ~/Library/Logs/winston-router.err.log     # Go router
 tail -f ~/Library/Logs/winston-frontend.err.log    # Next.js
-tail -f ~/Library/Logs/polymr-audit.log            # Audit trail
+tail -f ~/Library/Logs/winston-audit.log            # Audit trail
 
 # Rebuild and restart everything
 ./scripts/restart.sh

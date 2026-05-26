@@ -93,7 +93,7 @@ function buildHierarchy(
   if (workspace === null) {
     const orch = agents.find((a) => a.name === "winston");
     const standalone = agents.filter(
-      (a) => a.name !== "winston" && !a.workspace
+      (a) => a.name !== "winston" && (!a.workspace || a.workspace === "personal")
     );
     const rows: AgentInfo[][] = [];
     if (orch) rows.push([orch]);
@@ -606,8 +606,15 @@ export default function Home() {
     []
   );
 
+  // The "Personal" entry is rendered by the fixed button at the top of the
+  // dropdown — and also covers agents whose name is prefixed `personal-` — so
+  // we exclude "personal" from the per-workspace list to avoid duplicates.
   const workspaceNames = [
-    ...new Set(agents.filter((a) => a.workspace).map((a) => a.workspace!)),
+    ...new Set(
+      agents
+        .filter((a) => a.workspace && a.workspace !== "personal")
+        .map((a) => a.workspace!)
+    ),
   ].sort();
 
   const tiers = buildHierarchy(agents, activeWorkspace);

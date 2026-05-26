@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 )
@@ -14,13 +13,6 @@ import (
 func testAPIServer(t *testing.T) http.Handler {
 	t.Helper()
 
-	os.Setenv("POLYMR_USER", "testuser")
-	os.Setenv("POLYMR_PASS", "testpass")
-	t.Cleanup(func() {
-		os.Unsetenv("POLYMR_USER")
-		os.Unsetenv("POLYMR_PASS")
-	})
-
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -28,10 +20,10 @@ func testAPIServer(t *testing.T) http.Handler {
 		w.Write([]byte(`{"status":"ok"}`))
 	})
 
-	mux.Handle("/api/agents", BasicAuth(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/agents", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`[]`))
-	})))
+	})
 
 	return SecurityHeaders(RateLimitAPI(mux))
 }
@@ -51,31 +43,6 @@ func TestIntegration_HealthEndpoint(t *testing.T) {
 	json.NewDecoder(rec.Body).Decode(&body)
 	if body["status"] != "ok" {
 		t.Errorf("expected status 'ok', got %q", body["status"])
-	}
-}
-
-func TestIntegration_ProtectedEndpoint_NoAuth(t *testing.T) {
-	srv := testAPIServer(t)
-	req := httptest.NewRequest("GET", "/api/agents", nil)
-	rec := httptest.NewRecorder()
-
-	srv.ServeHTTP(rec, req)
-
-	if rec.Code != http.StatusUnauthorized {
-		t.Errorf("expected 401, got %d", rec.Code)
-	}
-}
-
-func TestIntegration_ProtectedEndpoint_WithAuth(t *testing.T) {
-	srv := testAPIServer(t)
-	req := httptest.NewRequest("GET", "/api/agents", nil)
-	req.SetBasicAuth("testuser", "testpass")
-	rec := httptest.NewRecorder()
-
-	srv.ServeHTTP(rec, req)
-
-	if rec.Code != http.StatusOK {
-		t.Errorf("expected 200, got %d", rec.Code)
 	}
 }
 
@@ -127,7 +94,6 @@ func TestIntegration_LargeRequestBody(t *testing.T) {
 
 	largeBody := strings.Repeat("x", 1<<20) // 1MB
 	req := httptest.NewRequest("POST", "/api/agents", strings.NewReader(largeBody))
-	req.SetBasicAuth("testuser", "testpass")
 	rec := httptest.NewRecorder()
 
 	srv.ServeHTTP(rec, req)

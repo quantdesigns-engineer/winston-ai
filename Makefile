@@ -2,15 +2,15 @@
 
 # Build the Go router
 build:
-	go build -o bin/polymr ./cmd/polymr
+	go build -o bin/winston ./cmd/winston
 
 # Run the Go router
 run: build
-	./bin/polymr
+	./bin/winston
 
 # Run Go router in dev mode with hot reload (requires air)
 dev:
-	air -c .air.toml || go run ./cmd/polymr
+	air -c .air.toml || go run ./cmd/winston
 
 # Run the Next.js frontend
 frontend:

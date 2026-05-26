@@ -10,7 +10,7 @@ Two long-running processes, both under launchd with auto-restart (`KeepAlive=tru
 
 | Service | launchd label | Bind | Purpose |
 |---|---|---|---|
-| **Go router** (`bin/polymr`) | `com.winston.router` | `127.0.0.1:49710` | HTTP server. Routes requests, spawns agents, runs the Slack Socket Mode loop, proxies the frontend. |
+| **Go router** (`bin/winston`) | `com.winston.router` | `127.0.0.1:49710` | HTTP server. Routes requests, spawns agents, runs the Slack Socket Mode loop, proxies the frontend. |
 | **Next.js frontend** (`web/`) | `com.winston.frontend` | `127.0.0.1:49711` | Web dashboard — agent chat, voice, schedules, jobs. Reverse-proxied by the router. |
 
 Both services bind to loopback only. The Mac listens on no public ports and is not reachable from the internet. Slack works because it uses Socket Mode — an outbound websocket from the Mac to Slack — so there is no inbound webhook to expose.
