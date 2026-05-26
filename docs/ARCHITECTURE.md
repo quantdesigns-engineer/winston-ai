@@ -241,9 +241,9 @@ Sessions are persisted to `~/.config/winston/sessions.json`, keyed by Slack thre
 
 ```
 Thread TS "1774709768.109529" -> Session {
-    ClaudeSessionID: "e93f1c15-54f8-42dc-8b2d-04cda9a47b0c"
+    ClaudeSessionID: "00000000-0000-0000-0000-000000000000"
     AgentID:         "marketing"
-    SlackChannel:    "C0APB6KTUPL"
+    SlackChannel:    "C0123456789"
     LastUsed:        2026-03-28T09:30:12Z
 }
 ```
