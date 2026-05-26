@@ -76,7 +76,15 @@ func NewStore() (*Store, error) {
 	}
 	dbPath := os.Getenv("WINSTON_JOBS_DB")
 	if dbPath == "" {
-		dbPath = filepath.Join(home, ".claude", "data", "jobs.db")
+		// Prefer an existing codephil-jobs.db (the historical Winston layout)
+		// so a fresh install doesn't silently create an empty jobs.db while
+		// the real data sits unread next to it.
+		codephil := filepath.Join(home, ".claude", "data", "codephil-jobs.db")
+		if _, err := os.Stat(codephil); err == nil {
+			dbPath = codephil
+		} else {
+			dbPath = filepath.Join(home, ".claude", "data", "jobs.db")
+		}
 	}
 	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
 		if err := os.MkdirAll(filepath.Dir(dbPath), 0o755); err != nil {
@@ -436,7 +444,14 @@ func RunTool(tool string, args []string) (string, error) {
 	home, _ := os.UserHomeDir()
 	toolsDir := os.Getenv("WINSTON_JOBS_TOOLS_DIR")
 	if toolsDir == "" {
-		toolsDir = filepath.Join(home, ".claude", "tools", "jobs")
+		// Same fallback as the DB: prefer an existing codephil tools dir,
+		// fall back to the generic jobs/ default.
+		codephil := filepath.Join(home, ".claude", "tools", "codephil")
+		if _, err := os.Stat(codephil); err == nil {
+			toolsDir = codephil
+		} else {
+			toolsDir = filepath.Join(home, ".claude", "tools", "jobs")
+		}
 	}
 	scriptPath := filepath.Join(toolsDir, tool)
 	if _, err := os.Stat(scriptPath); err != nil {
