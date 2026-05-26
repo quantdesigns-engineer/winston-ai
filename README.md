@@ -11,6 +11,8 @@ A personal AI assistant that runs on a machine you control, exposes its agents t
 
 </div>
 
+![Winston dashboard](docs/img/dashboard.webp)
+
 ---
 
 ## What this is
@@ -30,6 +32,9 @@ This README covers the base platform. Two feature branches show what's possible 
 
 - [`feat/jobs-pipeline`](../../tree/feat/jobs-pipeline) — multi-marketplace job scraper (LinkedIn / Indeed / Glassdoor / Upwork / Google Jobs via Apify) with scoring, a jobs board UI, and Drive-backed auto-apply packages.
 - [`feat/social-workflow`](../../tree/feat/social-workflow) — branded social-content pipeline with image generation skills (Google Nano Banana / Gemini 3 Pro Image), demoed on a fictional "Acme Insights" brand.
+
+![Jobs board with 756 scraped listings, scored against the resume, with multi-select auto-apply](docs/img/jobs-board.webp)
+<sub>*The jobs board from `feat/jobs-pipeline` — 756 listings scraped across LinkedIn / Indeed / Glassdoor / Upwork / Google Jobs, scored against the candidate's resume, with a multi-select auto-apply flow on top.*</sub>
 
 ---
 
@@ -182,6 +187,9 @@ Then from any channel the app is in:
 
 You get a `_thinking…_` placeholder, then a reply in a new thread. Reply in that thread to continue the conversation — Winston resumes the same Claude session and context carries over.
 
+<p align="center"><img src="docs/img/slack-thread.webp" alt="Slack thread where Winston introduces itself, names the model, and lists the available sub-agents and MCP tools" width="540"></p>
+<sub>*A threaded Slack reply. Winston identifies the model it's running, the machine it's on, and the sub-agents and MCP tools it has on hand — because everything runs in your local environment, "what can you do" has a concrete, machine-specific answer.*</sub>
+
 ---
 
 ## Scheduling
@@ -200,6 +208,9 @@ curl -X POST -u "$USER:$PASS" http://localhost:49710/api/schedules \
 ```
 
 Because the scheduled run is just another invocation of the same agent, it has access to the same tools — including anything you've authenticated locally (Gmail, Drive, internal APIs, SSH). That's the part that's awkward to get from a cloud-hosted scheduler.
+
+![Schedules day view showing a rivalytics Social run at 7:30 AM](docs/img/schedules-day.webp)
+<sub>*Schedules day view: a `rivalytics-social` agent fires at 07:30 every day — scrapes competitor signals, drafts a post, generates the visuals, drops the package in Drive. Cron entries are agents, not text-only completions.*</sub>
 
 ---
 
