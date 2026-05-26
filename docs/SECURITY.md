@@ -21,7 +21,7 @@ The Mac binds only to loopback. There is no edge, no public hostname, no inbound
 
 ### Network
 
-- **Loopback-only bind.** Both `bin/polymr` (`127.0.0.1:49710`) and Next.js (`127.0.0.1:49711`) refuse non-local connections.
+- **Loopback-only bind.** Both `bin/winston` (`127.0.0.1:49710`) and Next.js (`127.0.0.1:49711`) refuse non-local connections.
 - **No public DNS, no open ports.** The Mac is not directly reachable from the internet or the LAN.
 - **Outbound Slack websocket.** Slack events arrive over a connection the router initiated, authenticated by the App-Level Token. There is no inbound webhook surface.
 - **Optional overlay for the web UI.** Tailscale Serve terminates HTTPS on the Mac and only admits devices on the tailnet — see [DEPLOYMENT.md](DEPLOYMENT.md).
@@ -57,7 +57,7 @@ With no edge in front of the router, **Basic Auth is the sole API auth layer**. 
 
 ### Audit
 
-- JSON append-only audit log at `~/Library/Logs/polymr-audit.log`
+- JSON append-only audit log at `~/Library/Logs/winston-audit.log`
 - Failed auth attempts logged with IP and attempted username
 - Security headers: X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, Referrer-Policy, CSP
 - Ops notifications to Slack on startup, shutdown, frontend status changes, model/prompt changes
@@ -82,7 +82,6 @@ All secrets live in `.env` and the router LaunchAgent plist. Both are excluded f
 
 | Secret | Location |
 |--------|----------|
-| `POLYMR_USER` / `POLYMR_PASS` | `.env`, `web/.env.local`, router plist |
 | `SLACK_BOT_TOKEN` | `.env`, router plist |
 | `SLACK_APP_TOKEN` | `.env`, router plist |
 | `SLACK_SIGNING_SECRET` | `.env`, router plist |

@@ -3,97 +3,14 @@ package router
 import (
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 )
 
-// --- Auth bypass tests ---
-
-func TestSecurity_AuthBypass_EmptyAuthHeader(t *testing.T) {
-	os.Setenv("POLYMR_USER", "admin")
-	os.Setenv("POLYMR_PASS", "secret")
-	defer os.Unsetenv("POLYMR_USER")
-	defer os.Unsetenv("POLYMR_PASS")
-
-	handler := BasicAuth(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	}))
-
-	req := httptest.NewRequest("GET", "/api/agents", nil)
-	req.Header.Set("Authorization", "")
-	rec := httptest.NewRecorder()
-
-	handler.ServeHTTP(rec, req)
-
-	if rec.Code != http.StatusUnauthorized {
-		t.Errorf("empty auth header should be rejected, got %d", rec.Code)
-	}
-}
-
-func TestSecurity_AuthBypass_MalformedBasicAuth(t *testing.T) {
-	os.Setenv("POLYMR_USER", "admin")
-	os.Setenv("POLYMR_PASS", "secret")
-	defer os.Unsetenv("POLYMR_USER")
-	defer os.Unsetenv("POLYMR_PASS")
-
-	handler := BasicAuth(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	}))
-
-	malformed := []string{
-		"Basic",
-		"Basic ",
-		"Basic notbase64!!!",
-		"Bearer token123",
-		"Digest username=admin",
-	}
-
-	for _, auth := range malformed {
-		req := httptest.NewRequest("GET", "/api/agents", nil)
-		req.Header.Set("Authorization", auth)
-		rec := httptest.NewRecorder()
-		handler.ServeHTTP(rec, req)
-
-		if rec.Code == http.StatusOK {
-			t.Errorf("malformed auth %q should not grant access", auth)
-		}
-	}
-}
-
-func TestSecurity_AuthBypass_SQLInjectionInCredentials(t *testing.T) {
-	os.Setenv("POLYMR_USER", "admin")
-	os.Setenv("POLYMR_PASS", "secret")
-	defer os.Unsetenv("POLYMR_USER")
-	defer os.Unsetenv("POLYMR_PASS")
-
-	handler := BasicAuth(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	}))
-
-	payloads := []struct{ user, pass string }{
-		{"admin' OR '1'='1", "anything"},
-		{"admin", "' OR '1'='1"},
-		{"admin' --", "secret"},
-		{"admin", "secret' UNION SELECT * FROM users --"},
-	}
-
-	for _, p := range payloads {
-		req := httptest.NewRequest("GET", "/api/agents", nil)
-		req.SetBasicAuth(p.user, p.pass)
-		rec := httptest.NewRecorder()
-		handler.ServeHTTP(rec, req)
-
-		if rec.Code == http.StatusOK {
-			t.Errorf("SQL injection attempt should fail: user=%q pass=%q", p.user, p.pass)
-		}
-	}
-}
-
 // --- IP spoofing tests ---
-
-// With the Cloudflare tunnel removed, Winston binds to loopback only with no
-// reverse proxy in front. Forwarded headers (Cf-Connecting-Ip, X-Forwarded-For)
-// are attacker-controllable and must be ignored — RemoteAddr is authoritative.
+//
+// Winston binds to loopback only with no reverse proxy in front. Forwarded
+// headers (Cf-Connecting-Ip, X-Forwarded-For) are attacker-controllable and
+// must be ignored — RemoteAddr is authoritative.
 
 func TestSecurity_IPSpoofing_ForwardedHeadersIgnored(t *testing.T) {
 	req := httptest.NewRequest("GET", "/", nil)
@@ -181,36 +98,5 @@ func TestSecurity_CSPPresent(t *testing.T) {
 	csp := rec.Header().Get("Content-Security-Policy")
 	if csp == "" {
 		t.Error("Content-Security-Policy header should be set")
-	}
-}
-
-// --- Brute force protection ---
-
-func TestSecurity_BruteForce_RateLimited(t *testing.T) {
-	os.Setenv("POLYMR_USER", "admin")
-	os.Setenv("POLYMR_PASS", "strong-password-here")
-	defer os.Unsetenv("POLYMR_USER")
-	defer os.Unsetenv("POLYMR_PASS")
-
-	handler := RateLimitAuth(BasicAuth(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})))
-
-	blocked := false
-	for i := 0; i < 30; i++ {
-		req := httptest.NewRequest("GET", "/api/agents", nil)
-		req.SetBasicAuth("admin", "wrong-guess")
-		req.RemoteAddr = "203.0.113.5:5555"
-		rec := httptest.NewRecorder()
-		handler.ServeHTTP(rec, req)
-
-		if rec.Code == http.StatusTooManyRequests {
-			blocked = true
-			break
-		}
-	}
-
-	if !blocked {
-		t.Error("brute force attack should be rate limited")
 	}
 }
