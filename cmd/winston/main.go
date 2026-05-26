@@ -8,10 +8,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/quantdesigns-engineer/winston-ai/internal/agents"
-	"github.com/quantdesigns-engineer/winston-ai/internal/notify"
-	"github.com/quantdesigns-engineer/winston-ai/internal/router"
-	"github.com/quantdesigns-engineer/winston-ai/internal/slack"
+	"github.com/codephilip/winston-ai/internal/agents"
+	"github.com/codephilip/winston-ai/internal/notify"
+	"github.com/codephilip/winston-ai/internal/router"
+	"github.com/codephilip/winston-ai/internal/slack"
 )
 
 func main() {
