@@ -25,8 +25,6 @@ cp .env.example .env
 chmod 600 .env
 ```
 
-Create `web/.env.local` with `POLYMR_USER` and `POLYMR_PASS` matching your `.env` values.
-
 See `.env.example` for all available variables. Key additions beyond the basics:
 
 | Variable | Purpose |
@@ -40,7 +38,7 @@ See `.env.example` for all available variables. Key additions beyond the basics:
 ### 3. Build
 
 ```bash
-make build               # Go binary -> bin/polymr
+make build               # Go binary -> bin/winston
 cd web && npm run build   # Next.js -> web/.next/
 ```
 
@@ -105,7 +103,7 @@ These files are created automatically on first use. Deleting them resets all ses
 ```bash
 tail -f ~/Library/Logs/winston-router.err.log     # Go router (incl. Slack socket logs)
 tail -f ~/Library/Logs/winston-frontend.err.log   # Next.js
-tail -f ~/Library/Logs/polymr-audit.log           # Audit (JSON)
+tail -f ~/Library/Logs/winston-audit.log           # Audit (JSON)
 ```
 
 ## Slack App Setup
@@ -132,7 +130,7 @@ tailscale serve --bg --https=443 http://127.0.0.1:49710
 tailscale serve status
 ```
 
-Open the printed `https://<machine>.<tailnet>.ts.net` URL from any device that's signed in to your Tailscale account. The Go router still requires HTTP basic auth (`POLYMR_USER` / `POLYMR_PASS`) on top of Tailscale's identity check.
+Open the printed `https://<machine>.<tailnet>.ts.net` URL from any device that's signed in to your Tailscale account. Tailscale's tailnet identity is the only access control — Winston has no per-request auth of its own.
 
 To turn it off:
 

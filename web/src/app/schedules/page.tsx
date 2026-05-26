@@ -975,7 +975,7 @@ export default function Schedules() {
   const [selectedDays, setSelectedDays] = useState<number[]>([1]);
   const [selectedAgent, setSelectedAgent] = useState("");
   const [prompt, setPrompt] = useState("");
-  const [slackChannel, setSlackChannel] = useState("#polymr-personal");
+  const [slackChannel, setSlackChannel] = useState("#winston-personal");
   const [timezone, setTimezone] = useState("");
 
   useEffect(() => {

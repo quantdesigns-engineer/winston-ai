@@ -1,5 +1,5 @@
 #!/bin/bash
-# Install Polymr background services (macOS launchd or Linux systemd)
+# Install Winston background services (macOS launchd or Linux systemd)
 set -e
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -79,7 +79,7 @@ install_macos() {
     <string>com.winston.router</string>
     <key>ProgramArguments</key>
     <array>
-        <string>$PROJECT_DIR/bin/polymr</string>
+        <string>$PROJECT_DIR/bin/winston</string>
     </array>
     <key>WorkingDirectory</key>
     <string>$PROJECT_DIR</string>
@@ -154,12 +154,12 @@ install_linux() {
     echo "Generating winston-router.service..."
     sudo tee /etc/systemd/system/winston-router.service > /dev/null <<SERVICE
 [Unit]
-Description=Winston Router (Polymr Go backend)
+Description=Winston Router (Go backend)
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=$PROJECT_DIR/bin/polymr
+ExecStart=$PROJECT_DIR/bin/winston
 WorkingDirectory=$PROJECT_DIR
 EnvironmentFile=$PROJECT_DIR/.env
 Restart=always

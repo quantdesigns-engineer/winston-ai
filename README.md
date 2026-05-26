@@ -85,7 +85,7 @@ Your phone / laptop
 The router binds to `127.0.0.1` only — nothing on the public internet ever reaches it. Slack works because the worker holds an outbound Socket Mode websocket. For remote access to the web UI, [Tailscale Serve](https://tailscale.com/kb/1242/tailscale-serve) is a good fit (your tailnet only, no public endpoint).
 
 ```
-cmd/polymr/main.go            HTTP server + Socket Mode loop
+cmd/winston/main.go            HTTP server + Socket Mode loop
 internal/
   agents/manager.go           Agent registry, sessions, Claude subprocess exec
   router/                     HTTP routes, Next.js proxy, auth, audit log, rate limit
@@ -111,7 +111,7 @@ You need Docker, Docker Compose, and the [Claude CLI](https://github.com/anthrop
 ```bash
 git clone https://github.com/codephilip/winston-ai.git winston
 cd winston
-cp .env.example .env          # fill in POLYMR_USER / POLYMR_PASS
+cp .env.example .env          # fill in Slack + other tokens
 mkdir -p ~/.claude/agents     # your agents live here (mounted into the container)
 
 cat > ~/.claude/agents/winston.md <<'EOF'
@@ -126,7 +126,7 @@ EOF
 
 docker compose up -d --build
 curl http://localhost:49710/health        # {"status":"ok",...}
-open http://localhost:49710               # dashboard (Basic Auth: POLYMR_USER/PASS)
+open http://localhost:49710               # dashboard
 ```
 
 `docker-compose.yml` mounts `~/.claude/agents` read-through, persists config and logs in named volumes, and publishes **only** `127.0.0.1:49710`. Slack tokens come later — the dashboard works without them.
@@ -136,7 +136,7 @@ open http://localhost:49710               # dashboard (Basic Auth: POLYMR_USER/P
 ```bash
 # Prereqs: Go 1.25+, Node 20+, Claude CLI authenticated
 make deps                          # go mod tidy + npm install
-make build                         # bin/polymr
+make build                         # bin/winston
 cd web && npm run build && cd ..
 
 # Two tabs:
@@ -225,7 +225,7 @@ curl -X POST -u "$USER:$PASS" http://localhost:49710/api/agents/winston/run \
 
 Two things are worth being honest about:
 
-**The HTTP surface is small and locked down.** The router and the Next.js frontend bind to `127.0.0.1` only. Every `/api/*` request goes through rate limiting, Basic Auth, input sanitization (4k char truncation, known prompt-injection patterns stripped), and an audit log. CSP, `X-Frame-Options: DENY`, nosniff, and referrer policy are set on every response. Full threat model: [`docs/SECURITY.md`](docs/SECURITY.md).
+**The HTTP surface is small and locked down.** The router and the Next.js frontend bind to `127.0.0.1` only. Every `/api/*` request goes through rate limiting, input sanitization (4k char truncation, known prompt-injection patterns stripped), and an audit log. CSP, `X-Frame-Options: DENY`, nosniff, and referrer policy are set on every response. Full threat model: [`docs/SECURITY.md`](docs/SECURITY.md).
 
 **Slack is the one piece that meaningfully widens the trust boundary.** Slash commands and DMs to the bot become prompts that run on your machine with your user's permissions. The mitigation is: (1) input sanitization on the way in, (2) Socket Mode so the path is outbound-only with no public endpoint, (3) workspace-level controls in Slack itself (who can install the app, who can see the bot, who can DM it). It's still worth knowing that anyone with access to that Slack workspace can ask Winston to do things, and that "things" can include running shell commands. If you're putting Winston in a busy workspace, scope every agent's system prompt deliberately and consider an allow-list of channels in `internal/slack/` before going further.
 
@@ -234,7 +234,7 @@ Other operational notes:
 - `.env` is git-ignored; never commit secrets.
 - Each agent runs as your user — there is no sandbox. Treat agent prompts as part of your attack surface.
 - Keep the Claude CLI updated (`npm i -g @anthropic-ai/claude-code`).
-- Strong `POLYMR_PASS`; rotate the Slack tokens if a laptop with the `.env` walks off.
+- Rotate the Slack tokens if a laptop with the `.env` walks off.
 
 ---
 

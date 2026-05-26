@@ -1,5 +1,5 @@
 #!/bin/bash
-# Restart all Winston/Polymr services
+# Restart all Winston services
 set -e
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -8,7 +8,7 @@ LOGS_DIR="$HOME/Library/Logs"
 
 echo "Rebuilding Go router..."
 cd "$PROJECT_DIR"
-go build -o bin/polymr ./cmd/polymr
+go build -o bin/winston ./cmd/winston
 
 echo "Rebuilding Next.js frontend..."
 cd "$PROJECT_DIR/web"

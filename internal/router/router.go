@@ -19,10 +19,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
-	"github.com/polymr/polymr/internal/agents"
-	"github.com/polymr/polymr/internal/kali"
-	"github.com/polymr/polymr/internal/notify"
-	"github.com/polymr/polymr/internal/voice"
+	"github.com/quantdesigns-engineer/winston-ai/internal/agents"
+	"github.com/quantdesigns-engineer/winston-ai/internal/kali"
+	"github.com/quantdesigns-engineer/winston-ai/internal/notify"
+	"github.com/quantdesigns-engineer/winston-ai/internal/voice"
 )
 
 var startTime = time.Now()
@@ -102,11 +102,11 @@ func NewWithManager(manager *agents.Manager) http.Handler {
 
 	api.Get("/health", healthHandler)
 
-	// Protected API endpoints
+	// API endpoints. Router binds to 127.0.0.1 only; non-local access goes
+	// through Tailscale, which provides identity. No per-request auth here.
 	api.Route("/api", func(r chi.Router) {
 		r.Use(RateLimitAuth)
 		r.Use(AuditLog)
-		r.Use(BasicAuth)
 		r.Get("/health", healthHandler)
 		r.Get("/agents", manager.ListAgents)
 		r.Get("/agents/{agent}", manager.GetAgent)
@@ -147,9 +147,9 @@ func NewWithManager(manager *agents.Manager) http.Handler {
 			frontendProxy.ServeHTTP(w, r)
 			return
 		}
-		// Everything else is a frontend page — basic auth as a second
-		// layer on top of Tailscale's tailnet-only access.
-		AuditLog(BasicAuth(frontendProxy)).ServeHTTP(w, r)
+		// Everything else is a frontend page. Tailscale provides identity for
+		// non-local access; we audit-log the request and proxy.
+		AuditLog(frontendProxy).ServeHTTP(w, r)
 	})
 }
 
@@ -299,7 +299,7 @@ func (rb *responseBuffer) Write(b []byte) (int, error) { rb.body = append(rb.bod
 // The script is detached into its own process group so it survives this process being killed
 // (restart.sh does launchctl bootout on this very service).
 func restartServices() {
-	projectDir := filepath.Dir(filepath.Dir(os.Args[0])) // bin/polymr → project root
+	projectDir := filepath.Dir(filepath.Dir(os.Args[0])) // bin/winston → project root
 	// Fall back to well-known project path if binary isn't in bin/
 	if _, err := os.Stat(filepath.Join(projectDir, "go.mod")); err != nil {
 		home := os.Getenv("HOME")

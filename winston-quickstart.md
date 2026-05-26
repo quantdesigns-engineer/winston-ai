@@ -10,7 +10,7 @@ Winston is a self-hosted AI agent platform that runs on a Mac mini. It binds to 
 
 | Component | What it does |
 |---|---|
-| **Go Router** (`bin/polymr`) | HTTP server (loopback), Slack Socket Mode loop, agent orchestration |
+| **Go Router** (`bin/winston`) | HTTP server (loopback), Slack Socket Mode loop, agent orchestration |
 | **Next.js Frontend** | Dashboard at `http://localhost:49711` (or via the router's reverse proxy on `:49710`) |
 
 ---
@@ -38,7 +38,7 @@ Both services run as launchd agents (auto-start on login):
 
 | Label | Binary | Bind |
 |---|---|---|
-| `com.winston.router` | `~/projects/winston/bin/polymr` | `127.0.0.1:49710` |
+| `com.winston.router` | `~/projects/winston/bin/winston` | `127.0.0.1:49710` |
 | `com.winston.frontend` | `npm run start` (Next.js) | `127.0.0.1:49711` |
 
 ---
@@ -93,7 +93,7 @@ launchctl kickstart -k gui/$(id -u)/com.winston.frontend
 ### After a code change (rebuild + restart)
 ```bash
 cd ~/projects/winston
-go build -o bin/polymr ./cmd/polymr
+go build -o bin/winston ./cmd/winston
 launchctl kickstart -k gui/$(id -u)/com.winston.router
 ```
 
@@ -161,7 +161,6 @@ All secrets live in `~/projects/winston/.env` (never committed to git):
 
 ```
 PORT=49710
-POLYMR_USER / POLYMR_PASS    # Basic auth for the dashboard/API
 SLACK_BOT_TOKEN              # xoxb-... Slack bot token
 SLACK_APP_TOKEN              # xapp-... App-Level token (connections:write) for Socket Mode
 SLACK_SIGNING_SECRET         # Kept for the legacy HTTP /slack/* path
@@ -184,7 +183,7 @@ tailscale serve --bg --https=443 http://127.0.0.1:49710
 tailscale serve status
 ```
 
-Open the printed `https://<machine>.<tailnet>.ts.net` URL from any device signed in to the same tailnet. Basic Auth still applies on top.
+Open the printed `https://<machine>.<tailnet>.ts.net` URL from any device signed in to the same tailnet.
 
 Slack does not need any of this — Socket Mode works regardless.
 

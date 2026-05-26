@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/polymr/polymr/internal/agents"
+	"github.com/quantdesigns-engineer/winston-ai/internal/agents"
 	slackapi "github.com/slack-go/slack"
 	"github.com/slack-go/slack/slackevents"
 	"github.com/slack-go/slack/socketmode"
