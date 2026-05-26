@@ -1,4 +1,4 @@
-module github.com/polymr/polymr
+module github.com/quantdesigns-engineer/winston-ai
 
 go 1.25.0
 

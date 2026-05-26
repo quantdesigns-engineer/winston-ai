@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/polymr/polymr/internal/agents"
-	"github.com/polymr/polymr/internal/sanitize"
+	"github.com/quantdesigns-engineer/winston-ai/internal/agents"
+	"github.com/quantdesigns-engineer/winston-ai/internal/sanitize"
 	slackapi "github.com/slack-go/slack"
 )
 

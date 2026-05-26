@@ -8,10 +8,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/polymr/polymr/internal/agents"
-	"github.com/polymr/polymr/internal/notify"
-	"github.com/polymr/polymr/internal/router"
-	"github.com/polymr/polymr/internal/slack"
+	"github.com/quantdesigns-engineer/winston-ai/internal/agents"
+	"github.com/quantdesigns-engineer/winston-ai/internal/notify"
+	"github.com/quantdesigns-engineer/winston-ai/internal/router"
+	"github.com/quantdesigns-engineer/winston-ai/internal/slack"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 	}
 
 	go func() {
-		log.Printf("Polymr router listening on %s:%s", bind, port)
+		log.Printf("Winston router listening on %s:%s", bind, port)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			notify.Shutdown("server error: " + err.Error())
 			log.Fatalf("server error: %v", err)

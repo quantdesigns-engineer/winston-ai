@@ -20,8 +20,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/polymr/polymr/internal/agents"
-	"github.com/polymr/polymr/internal/jobs"
+	"github.com/quantdesigns-engineer/winston-ai/internal/agents"
+	"github.com/quantdesigns-engineer/winston-ai/internal/jobs"
 )
 
 // jobStore is lazily initialized on first handler call. Failure here is
