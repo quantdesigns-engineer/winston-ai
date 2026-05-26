@@ -1,4 +1,4 @@
-module github.com/quantdesigns-engineer/winston-ai
+module github.com/codephilip/winston-ai
 
 go 1.25.0
 

@@ -19,10 +19,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
-	"github.com/quantdesigns-engineer/winston-ai/internal/agents"
-	"github.com/quantdesigns-engineer/winston-ai/internal/kali"
-	"github.com/quantdesigns-engineer/winston-ai/internal/notify"
-	"github.com/quantdesigns-engineer/winston-ai/internal/voice"
+	"github.com/codephilip/winston-ai/internal/agents"
+	"github.com/codephilip/winston-ai/internal/kali"
+	"github.com/codephilip/winston-ai/internal/notify"
+	"github.com/codephilip/winston-ai/internal/voice"
 )
 
 var startTime = time.Now()
